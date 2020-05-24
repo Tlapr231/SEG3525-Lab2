@@ -1,0 +1,63 @@
+div.card {
+    /* float: left; */
+    width: 300px;
+    height: 250px;
+    margin: 12px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 8px;
+    text-align: center;
+    background-color: white;
+}
+
+div.card-body {
+    text-align: left;
+}
+/* 
+    pour le size de l'ecran jutilise du code de https://www.w3schools.com/cssref/css3_pr_mediaquery.asp 
+    pour le auto-sizing de la grid j'utilise du code de https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout/Auto-placement_in_CSS_Grid_Layout
+    Code for grids by w3School https://www.w3schools.com/css/css_grid.asp 
+    Edited by Thierry Laprade #300067788 
+*/
+div.products {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+
+@media only screen and (max-width: 1770px) {
+    div.products {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media only screen and (max-width: 1430px) {
+    div.products {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media only screen and (max-width: 1095px) {
+    div.products {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 1430 = 4 */
+
+label.card {
+    font-size: large;
+}
+
+img.card {
+    height: 180px;
+}
+
+h2 {
+    margin: 6px 0;
+}
+
+
+

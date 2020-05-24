@@ -28,41 +28,83 @@ function openInfo(evt, tabName) {
 // generate a checkbox list from a list of products
 // it makes each product name as the label for the checkbos
 
-function populateListProductChoices(slct1, slct2) {
-    var s1 = document.getElementById(slct1);
-    var s2 = document.getElementById(slct2);
-	
-	// s2 represents the <div> in the Products tab, which shows the product list, so we first set it empty
-    s2.innerHTML = "";
-		
-	// obtain a reduced list of products based on restrictions
-    var optionArray = restrictListProducts(products, s1.value);
+// I am using inspiration from BootStraps Cards to display the items (https://getbootstrap.com/docs/4.0/components/card/) 
+// However all of the css is mine. only the html is form bootsrap (i didnt want to import bootstrap mid-project
 
-	// for each item in the array, create a checkbox element, each containing information such as:
-	// <input type="checkbox" name="product" value="Bread">
-	// <label for="Bread">Bread/label><br>
+// Here is my template
+/* 
+
+<div class="card">
+	<img class="card" src="images/brocoli.png" alt="Brocoli">
+	<div class="card-body">
+		<h2>Brocoli</h2>
+  		<label class="card">
+			10.99 $
+			<input class="css-checkbox" type="checkbox" name="" id="">
+  		</label>
+	</div>
+</div> 
+
+*/
+
+
+function populateListProductChoices(slct1, slct2) {
+    var booleanArray = slct1;
+    var productTab = document.getElementById(slct2);
+	
+	// productTab represents the <div> in the Products tab, which shows the product list, so we first set it empty
+	productTab.innerHTML = "";
+	
+	// Sort method by https://stackoverflow.com/questions/8837454/sort-array-of-objects-by-single-key-with-date-value
+	// Edited by Thierry Laprade #300067788
+	products.sort(function(a, b) {
+		var keyA = a.price;
+		var keyB = b.price;
+		// Compare the 2 prices
+		if (keyA < keyB) return -1;
+		if (keyA > keyB) return 1;
+		return 0;
+	});
+
+	// obtain a reduced list of products based on restrictions
+    var optionArray = restrictListProducts(products, booleanArray);
 		
 	for (i = 0; i < optionArray.length; i++) {
-			
-		var productName = optionArray[i];
-		// create the checkbox and add in HTML DOM
-		var checkbox = document.createElement("input");
-		checkbox.type = "checkbox";
-		checkbox.name = "product";
-		checkbox.value = productName;
-		s2.appendChild(checkbox);
+		var divCard = document.createElement("div");
+		divCard.className  = "card";
+
+		var image = document.createElement("img");
+		image.className  = "card";
+		image.src = `images/${optionArray[i].name}.png`;
+		image.alt = optionArray[i].name;
+		divCard.appendChild(image);
+
+		var divCardBody = document.createElement("div");
+		divCardBody.className  = "card-body";
 		
-		// create a label for the checkbox, and also add in HTML DOM
-		var label = document.createElement('label')
-		label.htmlFor = productName;
-		label.appendChild(document.createTextNode(productName));
-		s2.appendChild(label);
+		var labelCard = document.createElement("label");
+		labelCard.className  = "card";
 		
-		// create a breakline node and add in HTML DOM
-		s2.appendChild(document.createElement("br"));    
+		var h2Card = document.createElement("h2");
+		h2Card.innerText = optionArray[i].name;
+		labelCard.appendChild(h2Card);
+		
+		labelCard.innerHTML += optionArray[i].price;
+
+		var inputCard = document.createElement("input");
+		inputCard.type = "checkbox";
+		inputCard.name = "product";
+		inputCard.value = optionArray[i].name;
+		labelCard.appendChild(inputCard);
+
+		divCardBody.appendChild(labelCard);
+
+		divCard.appendChild(divCardBody);
+
+		productTab.appendChild(divCard);
 	}
 }
-	
+
 // This function is called when the "Add selected items to cart" button in clicked
 // The purpose is to build the HTML to be displayed (a Paragraph) 
 // We build a paragraph to contain the list of selected items, and the total price
@@ -72,23 +114,62 @@ function selectedItems(){
 	var ele = document.getElementsByName("product");
 	var chosenProducts = [];
 	
-	var c = document.getElementById('displayCart');
-	c.innerHTML = "";
+	var cart = document.getElementById('displayCart');
+	cart.innerHTML = "";
 	
 	// build list of selected item
-	var para = document.createElement("P");
+	var para = document.createElement("p");
 	para.innerHTML = "You selected : ";
 	para.appendChild(document.createElement("br"));
+	cart.appendChild(para);
+
+	var cartBody = document.createElement("div");
+	cartBody.className = "products";
+
 	for (i = 0; i < ele.length; i++) { 
 		if (ele[i].checked) {
-			para.appendChild(document.createTextNode(ele[i].value));
-			para.appendChild(document.createElement("br"));
+
+			// find the product object
+			for (let j=0; j<products.length; j+=1) {
+				if (ele[i].value.indexOf(products[j].name) > -1){
+					cartBody.appendChild(populateCartWithProduct(products[j]));
+				}
+			}
+
 			chosenProducts.push(ele[i].value);
 		}
 	}
-		
 	// add paragraph and total price
-	c.appendChild(para);
-	c.appendChild(document.createTextNode("Total Price is " + getTotalPrice(chosenProducts)));
+	cart.appendChild(cartBody);
+	cart.appendChild(document.createTextNode("Total Price is " + getTotalPrice(chosenProducts)));
 		
+}
+
+
+function populateCartWithProduct(product) {
+	var divCard = document.createElement("div");
+	divCard.className  = "card";
+
+	var image = document.createElement("img");
+	image.className  = "card";
+	image.src = `images/${product.name}.png`;
+	image.alt = product.name;
+	divCard.appendChild(image);
+
+	var divCardBody = document.createElement("div");
+	divCardBody.className  = "card-body";
+	
+	var h2Card = document.createElement("h2");
+	h2Card.innerText = product.name;
+	divCardBody.appendChild(h2Card);
+
+	var labelCard = document.createElement("label");
+	labelCard.className  = "card";
+	labelCard.innerText = product.price;
+
+	divCardBody.appendChild(labelCard);
+
+	divCard.appendChild(divCardBody);
+
+	return divCard;
 }
